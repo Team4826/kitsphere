@@ -23,7 +23,7 @@ function getApiBaseUrl(): string {
     }
   }
 
-  return 'http://10.0.7.12:5000/api';
+  return 'https://kitsphere-backend.onrender.com/api';
 }
 
 const API_BASE_URL = getApiBaseUrl();
