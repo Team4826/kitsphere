@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 import {
   Alert,
   Animated,
@@ -123,7 +124,7 @@ const searchableFeatures: Feature[] = [
   },
 ];
 
-const features: Feature[] = searchableFeatures.filter((feature) => feature.id !== 'lost-found');
+const features: Feature[] = searchableFeatures;
 
 const galleryItems = [
   {
@@ -150,13 +151,19 @@ export default function HomeScreen() {
   const { colors } = useTheme();
   const [user, setUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
 
   const scale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    loadUser();
     startBackgroundAnimation();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadUser();
+    }, [])
+  );
 
   const filteredSearchResults = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -175,6 +182,26 @@ export default function HomeScreen() {
     try {
       const currentUser = await getCurrentUser();
       setUser(currentUser);
+
+      // Try to load a locally saved profile photo (profile screen saves under kitsphere_profile_photo_<id>)
+      try {
+        if (currentUser?.id) {
+          const saved = await (
+            await import('@react-native-async-storage/async-storage')
+          ).default.getItem(`kitsphere_profile_photo_${currentUser.id}`);
+
+          if (saved) {
+            setProfilePhoto(saved);
+          } else {
+            setProfilePhoto(null);
+          }
+        } else {
+          setProfilePhoto(null);
+        }
+      } catch (photoErr) {
+        console.error('Error loading profile photo:', photoErr);
+        setProfilePhoto(null);
+      }
     } catch (error) {
       console.error('Home user loading error:', error);
     }
@@ -286,12 +313,26 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.welcomeContainer}>
-            <Text style={[styles.greeting, { color: colors.textSecondary }]}>Welcome back 👋</Text>
-            <Text style={[styles.welcomeName, { color: colors.white }]} numberOfLines={1}>{firstName}</Text>
+            <View style={styles.profileRow}>
+              <View style={styles.avatarWrap}>
+                {profilePhoto ? (
+                  <Image source={{ uri: profilePhoto }} style={styles.avatarImage} />
+                ) : (
+                  <View style={[styles.avatarPlaceholder, { backgroundColor: colors.surfaceSecondary }]}>
+                    <Text style={[styles.avatarInitial, { color: colors.white }]}>{(firstName || 'S').charAt(0).toUpperCase()}</Text>
+                  </View>
+                )}
+              </View>
 
-            <View style={styles.rollRow}>
-              <Ionicons name="card-outline" size={15} color={colors.primary} />
-              <Text style={[styles.rollText, { color: colors.textSecondary }]}>{rollNumber}</Text>
+              <View style={styles.nameColumn}>
+                <Text style={[styles.greeting, { color: colors.textSecondary }]}>Welcome back 👋</Text>
+                <Text style={[styles.welcomeName, { color: colors.white }]} numberOfLines={1}>{firstName}</Text>
+
+                <View style={styles.rollRow}>
+                  <Ionicons name="card-outline" size={15} color={colors.primary} />
+                  <Text style={[styles.rollText, { color: colors.textSecondary }]}>{rollNumber}</Text>
+                </View>
+              </View>
             </View>
 
             <Text style={[styles.chooseText, { color: colors.textSecondary }]}>Choose a feature to continue</Text>
@@ -494,7 +535,13 @@ const styles = StyleSheet.create({
   welcomeName: { fontSize: 34, fontWeight: '900', marginTop: 3, maxWidth: width - 32 },
   rollRow: { flexDirection: 'row', alignItems: 'center', marginTop: 9, gap: 7 },
   rollText: { fontSize: 12, fontWeight: '600' },
-  chooseText: { fontSize: 13, marginTop: 22 },
+  chooseText: { fontSize: 13, marginTop: 12 },
+  profileRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 8 },
+  avatarWrap: { width: 68, height: 68, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
+  avatarImage: { width: 68, height: 68, borderRadius: 999 },
+  avatarPlaceholder: { width: 68, height: 68, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
+  avatarInitial: { fontSize: 26, fontWeight: '800' },
+  nameColumn: { flex: 1 },
   searchCardWrap: { paddingHorizontal: 16, marginTop: 10 },
   searchCard: {
     flexDirection: 'row',

@@ -41,21 +41,6 @@ export default function MainLayout() {
         }}
       />
 
-      {/* LOST & FOUND */}
-      <Tabs.Screen
-        name="lost-found"
-        options={{
-          title: 'Lost & Found',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons
-              name="search-outline"
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-
       {/* PREMIUM */}
       <Tabs.Screen
         name="premium"

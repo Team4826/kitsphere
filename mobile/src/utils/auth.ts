@@ -53,6 +53,20 @@ export async function clearAuth(): Promise<void> {
   await SecureStore.deleteItemAsync(USER_KEY);
 }
 
+export async function storeAuthSession(token: string, user: Record<string, any>): Promise<void> {
+  await SecureStore.setItemAsync(AUTH_TOKEN_KEY, token);
+  await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
+}
+
+export async function updateStoredUser(user: Record<string, any> | null): Promise<void> {
+  if (!user) {
+    await SecureStore.deleteItemAsync(USER_KEY);
+    return;
+  }
+
+  await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
+}
+
 export async function logout(): Promise<void> {
   await clearAuth();
 }

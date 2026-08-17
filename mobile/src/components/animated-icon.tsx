@@ -1,12 +1,12 @@
 import { Image } from 'expo-image';
 import * as SplashScreen from 'expo-splash-screen';
 import { useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
 const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
-const DURATION = 600;
+const DURATION = 650;
 
 export function AnimatedSplashOverlay() {
   const [animate, setAnimate] = useState(false);
@@ -16,24 +16,30 @@ export function AnimatedSplashOverlay() {
 
   const splashKeyframe = new Keyframe({
     0: {
-      transform: [{ scale: 1 }],
       opacity: 1,
+      transform: [{ scale: 1 }],
     },
     20: {
       opacity: 1,
     },
     70: {
-      opacity: 0,
-      easing: Easing.elastic(0.7),
+      opacity: 1,
+      transform: [{ scale: 1.04 }],
+      easing: Easing.out(Easing.cubic),
     },
     100: {
       opacity: 0,
-      transform: [{ scale: 1 }],
-      easing: Easing.elastic(0.7),
+      transform: [{ scale: 1.08 }],
+      easing: Easing.out(Easing.cubic),
     },
   });
 
-  const image = <Image style={styles.image} source={require('@/assets/images/kitsphere-logo.png')} />;
+  const image = (
+    <View style={styles.logoWrap}>
+      <Image style={styles.image} source={require('@/assets/images/kitsphere-logo.png')} />
+      <Text style={styles.brandText}>KitSphere</Text>
+    </View>
+  );
 
   return animate ? (
     <Animated.View
@@ -64,36 +70,40 @@ export function AnimatedSplashOverlay() {
 const keyframe = new Keyframe({
   0: {
     transform: [{ scale: INITIAL_SCALE_FACTOR }],
+    opacity: 0.2,
   },
   100: {
     transform: [{ scale: 1 }],
-    easing: Easing.elastic(0.7),
+    opacity: 1,
+    easing: Easing.out(Easing.cubic),
   },
 });
 
 const logoKeyframe = new Keyframe({
   0: {
-    transform: [{ scale: 1.3 }],
+    transform: [{ scale: 1.35 }],
     opacity: 0,
   },
-  40: {
-    transform: [{ scale: 1.3 }],
-    opacity: 0,
-    easing: Easing.elastic(0.7),
+  35: {
+    transform: [{ scale: 1.2 }],
+    opacity: 0.3,
+    easing: Easing.out(Easing.cubic),
   },
   100: {
     opacity: 1,
     transform: [{ scale: 1 }],
-    easing: Easing.elastic(0.7),
+    easing: Easing.out(Easing.cubic),
   },
 });
 
 const glowKeyframe = new Keyframe({
   0: {
     transform: [{ rotateZ: '0deg' }],
+    opacity: 0,
   },
   100: {
     transform: [{ rotateZ: '7200deg' }],
+    opacity: 0.75,
   },
 });
 
@@ -121,6 +131,7 @@ const styles = StyleSheet.create({
     width: 201,
     height: 201,
     position: 'absolute',
+    opacity: 0.8,
   },
   iconContainer: {
     justifyContent: 'center',
@@ -130,21 +141,34 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   image: {
-    width: 76,
-    height: 71,
+    width: 120,
+    height: 120,
+    resizeMode: 'contain',
   },
   background: {
     borderRadius: 40,
-    experimental_backgroundImage: `linear-gradient(180deg, #3C9FFE, #0274DF)`,
+    backgroundColor: '#2D88FF',
     width: 128,
     height: 128,
     position: 'absolute',
+    opacity: 0.9,
   },
   splashOverlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#0B1F2F',
+    backgroundColor: '#061722',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
+  },
+  logoWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  brandText: {
+    marginTop: 12,
+    color: '#FFFFFF',
+    fontSize: 30,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
 });

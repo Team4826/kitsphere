@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
 import { API_BASE_URL } from '../../services/api';
+import { storeAuthSession } from '../../utils/auth';
 import Constants from 'expo-constants';
 
 export default function LoginScreen() {
@@ -29,6 +29,10 @@ export default function LoginScreen() {
   // the expo-auth-session provider imports and configuration when ready.
 
   const handleLogin = async () => {
+    if (loading) {
+      return;
+    }
+
     const normalizedEmail = email.trim().toLowerCase();
 
     if (!normalizedEmail || !password) {
@@ -82,33 +86,8 @@ export default function LoginScreen() {
         return;
       }
 
-      // Store JWT securely on the device.
-      await SecureStore.setItemAsync(
-        'kitsphere_auth_token',
-        data.token,
-      );
-
-      // Store user information securely.
-      await SecureStore.setItemAsync(
-        'kitsphere_user',
-        JSON.stringify(data.user),
-      );
-
-      // Successful login.
-      Alert.alert(
-        'Welcome to KitSphere',
-        `Login successful. Welcome, ${
-          data.user?.name || 'Student'
-        }!`,
-        [
-          {
-            text: 'Continue',
-            onPress: () => {
-              router.replace('/(main)/home');
-            },
-          },
-        ],
-      );
+      await storeAuthSession(data.token, data.user || {});
+      router.replace('/(main)/home');
     } catch (error) {
       console.error('Login request error:', error);
 
@@ -333,9 +312,9 @@ const styles = StyleSheet.create({
   },
 
   logoMark: {
-    width: 58,
-    height: 58,
-    borderRadius: 18,
+    width: 62,
+    height: 62,
+    borderRadius: 20,
     backgroundColor: '#102840',
     borderWidth: 1,
     borderColor: '#24517A',
@@ -345,22 +324,22 @@ const styles = StyleSheet.create({
   },
 
   logoImage: {
-    width: 40,
-    height: 40,
+    width: 46,
+    height: 46,
     resizeMode: 'contain',
   },
 
   brand: {
     color: '#FFFFFF',
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '800',
     letterSpacing: 0.3,
   },
 
   brandSubtitle: {
     color: '#7E899B',
-    fontSize: 13,
-    marginTop: 5,
+    fontSize: 14,
+    marginTop: 6,
   },
 
   card: {
@@ -373,14 +352,14 @@ const styles = StyleSheet.create({
 
   title: {
     color: '#FFFFFF',
-    fontSize: 27,
+    fontSize: 28,
     fontWeight: '800',
   },
 
   description: {
     color: '#8E99AA',
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 14,
+    lineHeight: 21,
     marginTop: 9,
     marginBottom: 25,
   },
@@ -391,13 +370,13 @@ const styles = StyleSheet.create({
 
   label: {
     color: '#DDE3EC',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     marginBottom: 8,
   },
 
   inputContainer: {
-    minHeight: 54,
+    minHeight: 56,
     borderRadius: 15,
     backgroundColor: '#101722',
     borderWidth: 1,
@@ -411,7 +390,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 15,
   },
 
   forgotButton: {
@@ -422,12 +401,12 @@ const styles = StyleSheet.create({
 
   forgotText: {
     color: '#5FA8FF',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
   },
 
   loginButton: {
-    minHeight: 52,
+    minHeight: 56,
     borderRadius: 15,
     backgroundColor: '#1479E8',
     flexDirection: 'row',
@@ -442,7 +421,7 @@ const styles = StyleSheet.create({
 
   loginButtonText: {
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
   },
 
@@ -457,18 +436,18 @@ const styles = StyleSheet.create({
 
   registerQuestion: {
     color: '#7E899B',
-    fontSize: 12,
+    fontSize: 13,
   },
 
   registerLink: {
     color: '#5FA8FF',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
   },
 
   googleButton: {
     marginTop: 12,
-    minHeight: 52,
+    minHeight: 56,
     borderRadius: 15,
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',
@@ -479,7 +458,7 @@ const styles = StyleSheet.create({
 
   googleButtonText: {
     color: '#000',
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
   },
 

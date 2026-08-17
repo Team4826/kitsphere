@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getCurrentUser, logout, getAuthToken } from '../../utils/auth';
+import { getCurrentUser, logout, getAuthToken, updateStoredUser } from '../../utils/auth';
 import { API_BASE_URL as API_BASE_URL_CONST } from '../../services/api';
 
 type User = {
@@ -410,6 +410,7 @@ export default function ProfileScreen() {
 
         const updatedUser = data.user as User;
         setUser(updatedUser);
+        await updateStoredUser(updatedUser);
         await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
         setEditing(false);
         Alert.alert('Profile Updated', 'Your profile has been updated successfully.');

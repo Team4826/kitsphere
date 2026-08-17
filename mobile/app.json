@@ -4,7 +4,7 @@
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/kitsphere-official.png",
     "scheme": "mobile",
     "extra": {
       "GOOGLE_EXPO_CLIENT_ID": "REPLACE_WITH_EXPO_CLIENT_ID",
@@ -24,8 +24,8 @@
     "android": {
       "package": "com.kitsphere.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundColor": "#0B1F2F",
+        "foregroundImage": "./assets/images/kitsphere-official.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -40,9 +40,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#0B1F2F",
+          "image": "./assets/images/kitsphere-official.png",
+          "imageWidth": 120
         }
       ],
       "expo-secure-store",
@@ -52,12 +52,6 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/5d9c116a-1878-4524-af90-0b689a5b5ab0"
     }
   }
 }
